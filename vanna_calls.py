@@ -4,7 +4,7 @@ from vanna.remote import VannaDefault
 
 @st.cache_resource(ttl=3600)
 def setup_vanna():
-    vn = VannaDefault(api_key=st.secrets.get("VANNA_API_KEY"), model='chinook')
+    vn = VannaDefault(api_key="3c81178c26c94fe6bcae7d085ecccdcf", model='chinook')
     vn.connect_to_sqlite("https://vanna.ai/Chinook.sqlite")
     return vn
 
