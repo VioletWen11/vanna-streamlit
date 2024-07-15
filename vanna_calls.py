@@ -1,12 +1,9 @@
 import streamlit as st
 
 # Set page config at the very beginning
-# st.set_page_config(layout="wide")
+st.set_page_config(layout="wide")
 
 from vanna.remote import VannaDefault
-
-
-
 
 @st.cache_resource(ttl=3600)
 def setup_vanna():
@@ -18,7 +15,6 @@ def setup_vanna():
 def generate_questions_cached():
     vn = setup_vanna()
     return vn.generate_questions()
-
 
 @st.cache_data(show_spinner="Generating SQL query ...")
 def generate_sql_cached(question: str):
@@ -46,12 +42,10 @@ def generate_plotly_code_cached(question, sql, df):
     code = vn.generate_plotly_code(question=question, sql=sql, df=df)
     return code
 
-
 @st.cache_data(show_spinner="Running Plotly code ...")
 def generate_plot_cached(code, df):
     vn = setup_vanna()
     return vn.get_plotly_figure(plotly_code=code, df=df)
-
 
 @st.cache_data(show_spinner="Generating followup questions ...")
 def generate_followup_cached(question, sql, df):
@@ -63,9 +57,6 @@ def generate_summary_cached(question, df):
     vn = setup_vanna()
     return vn.generate_summary(question=question, df=df)
 
-
-
-## 增加多轮对话功能：
 # Initialize session state for conversation history
 if 'conversation' not in st.session_state:
     st.session_state.conversation = []
