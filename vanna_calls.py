@@ -1,10 +1,12 @@
 import streamlit as st
 
+# Set page config at the very beginning
+st.set_page_config(layout="wide")
+
 from vanna.remote import VannaDefault
 
 
-# Set page config at the very beginning
-st.set_page_config(layout="wide")
+
 
 @st.cache_resource(ttl=3600)
 def setup_vanna():
