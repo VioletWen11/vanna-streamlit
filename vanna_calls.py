@@ -1,7 +1,7 @@
 import streamlit as st
 
 # Set page config at the very beginning
-st.set_page_config(layout="wide")
+# st.set_page_config(layout="wide")
 
 from vanna.remote import VannaDefault
 
