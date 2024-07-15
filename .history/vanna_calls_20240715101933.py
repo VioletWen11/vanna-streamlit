@@ -59,7 +59,7 @@ def generate_summary_cached(question, df):
 
 
 
-## 增加多轮对话功能：
+## zj
 # Initialize session state for conversation history
 if 'conversation' not in st.session_state:
     st.session_state.conversation = []
