@@ -1,11 +1,8 @@
 import streamlit as st
 
 from vanna.remote import VannaDefault
-
-
 # Set page config at the very beginning
 st.set_page_config(layout="wide")
-
 @st.cache_resource(ttl=3600)
 def setup_vanna():
     vn = VannaDefault(api_key="3c81178c26c94fe6bcae7d085ecccdcf", model='chinook')
