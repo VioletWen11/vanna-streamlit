@@ -1,13 +1,10 @@
 import streamlit as st
 
-# Set page config at the very beginning
-st.set_page_config(layout="wide")
-
 from vanna.remote import VannaDefault
 
 @st.cache_resource(ttl=3600)
 def setup_vanna():
-    vn = VannaDefault(api_key="3c81178c26c94fe6bcae7d085ecccdcf", model='chinook')
+    vn = VannaDefault(api_key=st.secrets.get("VANNA_API_KEY"), model='chinook')
     vn.connect_to_sqlite("https://vanna.ai/Chinook.sqlite")
     return vn
 
@@ -15,6 +12,7 @@ def setup_vanna():
 def generate_questions_cached():
     vn = setup_vanna()
     return vn.generate_questions()
+
 
 @st.cache_data(show_spinner="Generating SQL query ...")
 def generate_sql_cached(question: str):
@@ -42,10 +40,12 @@ def generate_plotly_code_cached(question, sql, df):
     code = vn.generate_plotly_code(question=question, sql=sql, df=df)
     return code
 
+
 @st.cache_data(show_spinner="Running Plotly code ...")
 def generate_plot_cached(code, df):
     vn = setup_vanna()
     return vn.get_plotly_figure(plotly_code=code, df=df)
+
 
 @st.cache_data(show_spinner="Generating followup questions ...")
 def generate_followup_cached(question, sql, df):
@@ -56,59 +56,3 @@ def generate_followup_cached(question, sql, df):
 def generate_summary_cached(question, df):
     vn = setup_vanna()
     return vn.generate_summary(question=question, df=df)
-
-# Initialize session state for conversation history
-if 'conversation' not in st.session_state:
-    st.session_state.conversation = []
-
-# Streamlit app
-st.title("Vanna AI Multi-turn Conversation")
-
-question = st.text_input("Enter your question:")
-
-if question:
-    # Append new question to conversation history
-    st.session_state.conversation.append({'question': question})
-    
-    # Generate SQL query
-    sql_query = generate_sql_cached(question)
-    st.session_state.conversation[-1]['sql'] = sql_query
-    st.code(sql_query, language="sql")
-    
-    # Run SQL query
-    df = run_sql_cached(sql_query)
-    st.session_state.conversation[-1]['data'] = df
-    st.dataframe(df)
-    
-    # Generate Plotly code
-    plotly_code = generate_plotly_code_cached(question, sql_query, df)
-    st.session_state.conversation[-1]['plotly_code'] = plotly_code
-    st.code(plotly_code, language="python")
-    
-    # Generate Plotly figure
-    plot = generate_plot_cached(plotly_code, df)
-    st.session_state.conversation[-1]['plot'] = plot
-    st.plotly_chart(plot)
-    
-    # Generate followup questions
-    followup_questions = generate_followup_cached(question, sql_query, df)
-    st.session_state.conversation[-1]['followup'] = followup_questions
-    st.write("Follow-up questions:")
-    for q in followup_questions:
-        st.write("- " + q)
-
-# Display conversation history
-st.write("Conversation History:")
-for turn in st.session_state.conversation:
-    st.write(f"**Q:** {turn['question']}")
-    st.code(turn.get('sql', 'No SQL generated'), language="sql")
-    if 'data' in turn:
-        st.dataframe(turn['data'])
-    if 'plotly_code' in turn:
-        st.code(turn['plotly_code'], language="python")
-    if 'plot' in turn:
-        st.plotly_chart(turn['plot'])
-    if 'followup' in turn:
-        st.write("Follow-up questions:")
-        for q in turn['followup']:
-            st.write("- " + q)
