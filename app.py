@@ -11,6 +11,7 @@ from vanna_calls import (
     is_sql_valid_cached,
     generate_summary_cached
 )
+import os
 
 avatar_url = "https://vanna.ai/img/vanna.svg"
 
@@ -103,13 +104,6 @@ if my_question:
     user_message.write(f"{my_question}")
 
     sql = generate_sql_cached(question=my_question)
-
-    if "Artist" not in sql and "items" in sql:
-        st.session_state["chat_history"].append({"role": "assistant", "content": "It seems the SQL query is not valid for the current database."})
-        assistant_message_error = st.chat_message("assistant", avatar=avatar_url)
-        assistant_message_error.error("It seems the SQL query is not valid for the current database.")
-        st.session_state["my_question"] = None
-        st.experimental_rerun()
 
     if sql:
         if is_sql_valid_cached(sql=sql):
